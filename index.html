@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MONYET IQ 1000 · pertempuran epik</title>
+    <!-- CSS terpisah (akan di-inline agar semua file mandiri, strukturnya tetap terpisah di penjelasan) -->
+    <style>
+        /* ===== style.css ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0b0c0e;
+            font-family: 'FigtreeVF', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #f0e6d0;
+            line-height: 1.4;
+            overflow-x: hidden;
+        }
+
+        /* font epic ala referensi */
+        @font-face {
+            font-family: 'CameraPlainVariable';
+            src: url('https://cdn.gpteng.co/mcp-widgets/v1/fonts/CameraPlainVariable.woff2') format('woff2');
+            font-weight: 100 900;
+            font-display: swap;
+        }
+
+        .site-wrapper {
+            position: relative;
+            min-height: 100vh;
+            background: radial-gradient(circle at 20% 30%, #2f2a1f, #0f0e0a);
+            overflow: hidden;
+        }
+
+        /* background api & senjata (koneksi ke JS nanti) */
+        .battlefield-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .smoke, .fire, .particle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            background-image: 
+                radial-gradient(circle at 30% 40%, rgba(255, 100, 0, 0.15) 0%, transparent 30%),
+                radial-gradient(circle at 70% 60%, rgba(200, 50, 0, 0.25) 0%, transparent 40%),
+                repeating-linear-gradient(45deg, rgba(255, 200, 100, 0.02) 0px, rgba(255, 140, 0, 0.05) 2px, transparent 5px);
+            filter: blur(3px);
+            animation: flameShift 12s infinite alternate ease-in-out;
+        }
+
+        @keyframes flameShift {
+            0% { opacity: 0.5; transform: scale(1) translate(0, 0); }
+            100% { opacity: 1; transform: scale(1.05) translate(-1%, -2%); }
+        }
+
+        /* senjata bergerak (digambar JS) */
+        #weapons-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* konten di atas api */
+        .content {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem 6rem;
+        }
+
+        /* navigasi ala referensi tapi tema perang */
+        .nav-bar {
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0 2rem;
+        }
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(30, 25, 20, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid #b35e2e;
+            border-radius: 60px;
+            padding: 0.5rem;
+            box-shadow: 0 0 20px #ff5e1a40;
+        }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.4rem;
+            border-radius: 40px;
+            font-weight: 600;
+            text-decoration: none;
+            color: #ffcba4;
+            background: transparent;
+            transition: 0.2s;
+            border: 1px solid transparent;
+        }
+        .nav-link.active {
+            background: #aa3f0e;
+            color: #ffefd0;
+            border-color: #ff9900;
+            box-shadow: 0 0 15px #f97316;
+        }
+        .nav-link:hover {
+            background: #5f3a20;
+            border-color: #ff8c42;
+        }
+
+        /* welcome section */
+        .hero {
+            text-align: center;
+            margin: 2rem 0 4rem;
+        }
+        .hero h1 {
+            font-family: 'CameraPlainVariable', serif;
+            font-size: 5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #f9e2b7, #ffad84, #f75c03);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px #ff3c00, 0 0 40px #a62100;
+            letter-spacing: 4px;
+        }
+        .hero h1 span {
+            display: block;
+            font-size: 3rem;
+            color: #ecb07b;
+            text-shadow: 0 0 10px #b7410e;
+        }
+
+        /* dua gambar hero (MONKEYSD.PNG & MONNI.PNG) — pakai ukuran wajar */
+        .hero-images {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            margin: 3rem 0;
+        }
+        .hero-image-card {
+            width: 260px;
+            background: #2f261e;
+            border: 2px solid #b95b1c;
+            border-radius: 30px;
+            padding: 1rem 1rem 1.8rem;
+            box-shadow: 0 20px 30px #00000080, 0 0 40px #ff7b24;
+            transform: rotate(0deg) scale(1);
+            transition: 0.2s;
+        }
+        .hero-image-card:nth-child(1) { transform: rotate(-1deg); }
+        .hero-image-card:nth-child(2) { transform: rotate(2deg); }
+        .hero-image-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 20px;
+            border: 2px solid #d9783d;
+            background: #4d3623;
+        }
+        .hero-image-card p {
+            margin-top: 0.8rem;
+            font-weight: bold;
+            color: #ffbe85;
+        }
+
+        /* video grid ala twitter/yt shorts */
+        .video-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            margin: 5rem 0;
+        }
+        .video-card {
+            background: #1e1915;
+            border: 1px solid #ff7b2b;
+            border-radius: 36px;
+            padding: 1.2rem;
+            width: 360px;
+            box-shadow: 0 0 30px #ff4800;
+        }
+        .video-card iframe {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 24px;
+            border: 2px solid #b34b18;
+        }
+        .video-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.8rem 0 0.2rem;
+            color: #ffb785;
+            font-weight: 600;
+        }
+        .tiktok-badge {
+            background: #000;
+            color: #fff;
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* galeri bawah (footer images) — layout brutal */
+        .battle-gallery {
+            margin: 6rem 0 3rem;
+        }
+        .gallery-title {
+            font-size: 2.2rem;
+            text-align: center;
+            font-family: 'CameraPlainVariable', monospace;
+            border-bottom: 3px dashed #f76b1c;
+            padding-bottom: 0.5rem;
+            margin-bottom: 3rem;
+            text-transform: uppercase;
+            color: #fb923c;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem 1rem;
+        }
+        .gallery-item {
+            background: #2b221c;
+            border: 2px solid #c0601c;
+            border-radius: 30px;
+            padding: 1rem 0.8rem 1.4rem;
+            transform: rotate(0deg);
+            transition: 0.2s;
+            box-shadow: 0 0 20px #ff7b2b;
+        }
+        .gallery-item:nth-child(odd) { transform: rotate(-1deg); }
+        .gallery-item:nth-child(even) { transform: rotate(2deg); }
+        .gallery-item img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 24px;
+            border: 2px solid #eb7c34;
+            background: #523f2e;
+        }
+        .gallery-item p {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #fac195;
+            font-weight: 600;
+        }
+
+        /* footer seperti referensi */
+        .footer {
+            margin-top: 5rem;
+            padding: 2rem 0;
+            border-top: 1px solid #c0621e;
+            text-align: center;
+            color: #b58e6b;
+        }
+        .footer-hearts {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            font-size: 1.8rem;
+            filter: drop-shadow(0 0 6px #f60);
+        }
+
+        /* fixed beli $PUNCH tombol */
+        .buy-fixed {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #a13f0a;
+            color: #ffdbb5;
+            border: 2px solid #fd8b3f;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 800;
+            text-transform: uppercase;
+            box-shadow: 0 0 30px #ff7e22;
+            z-index: 200;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+        }
+
+        /* stats cards (copas feel referensi) */
+        .stats-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin: 3rem 0;
+        }
+        .stat-card {
+            background: #30271fb3;
+            backdrop-filter: blur(4px);
+            border: 1px solid #c7621a;
+            border-radius: 30px;
+            padding: 1.2rem 2rem;
+            min-width: 120px;
+            text-align: center;
+            box-shadow: 0 0 20px #ff7b2b;
+        }
+
+        /* senjata koneksi JS */
+        .weapon-tag {
+            font-size: 0.9rem;
+            color: #ffb281;
+            background: #251e17;
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            border-radius: 20px;
+            border: 1px solid #f97316;
+        }
+    </style>
+</head>
+<body>
+    <div class="site-wrapper">
+        <!-- background api & senjata (canvas akan digambar JS) -->
+        <div class="battlefield-bg">
+            <div class="smoke"></div>
+            <div class="fire"></div>
+        </div>
+        <canvas id="weapons-canvas"></canvas>
+
+        <div class="content">
+            <!-- navigasi ala referensi -->
+            <nav class="nav-bar">
+                <div class="nav-links">
+                    <a href="#" class="nav-link active">🔥 home</a>
+                    <a href="#" class="nav-link">⚔️ arsenal</a>
+                    <a href="#" class="nav-link">🧸 sanctuary</a>
+                    <a href="#" class="nav-link">📸 photo booth</a>
+                </div>
+            </nav>
+
+            <!-- WELCOME + DUA GAMBAR (MONKEYSD.PNG & MONNI.PNG) -->
+            <section class="hero">
+                <h1>WELCOME <span>monyet iq 1000</span></h1>
+                <div class="hero-images">
+                    <div class="hero-image-card">
+                        <!-- MONKEYSD.PNG -->
+                        <img src="MONKEYSD.PNG" alt="monkeysd" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzdhNTAyZSIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZiI+TUtTUDwvdGV4dD48L3N2Zz4='; this.alt='MONKEYSD.PNG placeholder'">
+                        <p>⚡ MONKEYSD.PNG</p>
+                    </div>
+                    <div class="hero-image-card">
+                        <!-- MONNI.PNG -->
+                        <img src="MONNI.PNG" alt="monni" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzdhNTAyZSIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1zaXplPSIxNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmIj5NT05OSTwvdGV4dD48L3N2Zz4='; this.alt='MONNI.PNG placeholder'">
+                        <p>💥 MONNI.PNG</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIDEO PERTAMA: model tiktok (twitter link) -->
+            <div class="video-grid">
+                <div class="video-card">
+                    <div class="video-label">
+                        <span class="tiktok-badge">🎵 TIKTOK · MONYET PERANG</span>
+                    </div>
+                    <!-- embed dari x.com pakai oembed? pakai blockquote biasa biar ringan, untuk prototype kita pakai iframe twitter -->
+                    <iframe src="https://platform.twitter.com/embed/index.html?dnt=true&embedId=tw-tiktok-like&frame=false&hideCard=false&hideThread=false&id=2026113901071675596&lang=en&theme=dark&widgetsVersion=1.0" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <!-- VIDEO KEDUA: model youtube short (elon musk) -->
+                <div class="video-card">
+                    <div class="video-label">
+                        <span class="tiktok-badge">📺 YT SHORT · EPIC</span>
+                    </div>
+                    <iframe src="https://platform.twitter.com/embed/index.html?dnt=true&embedId=tw-yt-short&frame=false&hideCard=false&hideThread=false&id=2026020316804243789&lang=en&theme=dark&widgetsVersion=1.0" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- battle stats kecil (senjata api) -->
+            <div class="stats-row">
+                <div class="stat-card"><span class="weapon-tag">🔥 flamethrower</span> 1000°C</div>
+                <div class="stat-card"><span class="weapon-tag">⚡ railgun</span> IQ 1000</div>
+                <div class="stat-card"><span class="weapon-tag">💣 granat monyet</span> 999</div>
+            </div>
+
+            <!-- GALLERY BAWAH (DEKET FOOTER) : MONKEY.PNG MOMO.PNG GAGH.png MONYET2.PNG Screenshot_65.png -->
+            <section class="battle-gallery">
+                <h2 class="gallery-title">⚙️ amunisi & persaudaraan ⚙️</h2>
+                <div class="gallery-grid">
+                    <!-- MONKEY.PNG -->
+                    <div class="gallery-item"><img src="MONKEY.PNG" alt="MONKEY" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzdhNTAyZSIvPjx0ZXh0IHg9IjQwIiB5PSI0NSIgZmlsbD0iI2ZmIj5NT05LRVk8L3RleHQ+PC9zdmc+';"><p>🐵 MONKEY.PNG</p></div>
+                    <!-- MOMO.PNG -->
+                    <div class="gallery-item"><img src="MOMO.PNG" alt="MOMO" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzdhNTAyZSIvPjx0ZXh0IHg9IjI4IiB5PSI0NSIgZmlsbD0iI2ZmIj5NT01PPC90ZXh0Pjwvc3ZnPg==';"><p>🍑 MOMO.PNG</p></div>
+                    <!-- GAGH.png -->
+                    <div class="gallery-item"><img src="GAGH.png" alt="GAGH" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzdhNTAyZSIvPjx0ZXh0IHg9IjI4IiB5PSI0NSIgZmlsbD0iI2ZmIj5HQUdIPC90ZXh0Pjwvc3ZnPg==';"><p>💣 GAGH.png</p></div>
+                    <!-- MONYET2.PNG -->
+                    <div class="gallery-item"><img src="MONYET2.PNG" alt="MONYET2" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzdhNTAyZSIvPjx0ZXh0IHg9IjE4IiB5PSI0NSIgZmlsbD0iI2ZmIj5NT05ZRVQyPC90ZXh0Pjwvc3ZnPg==';"><p>🐒 MONYET2.PNG</p></div>
+                    <!-- Screenshot_65.png -->
+                    <div class="gallery-item"><img src="Screenshot_65.png" alt="Screenshot_65" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzdhNTAyZSIvPjx0ZXh0IHg9IjEwIiB5PSI0NSIgZmlsbD0iI2ZmIj5TY3JlZW5zaG90PC90ZXh0Pjwvc3ZnPg==';"><p>📱 Screenshot_65</p></div>
+                </div>
+            </section>
+
+            <!-- footer khas referensi -->
+            <footer class="footer">
+                <div class="footer-hearts">
+                    <span>⚔️</span>🐵🔥🧸<span>💣</span>
+                </div>
+                <p style="margin: 1rem 0">© 2026 MONYET IQ 1000 — persenjataan tanpa batas</p>
+                <p style="opacity:0.7">sebagian hasil untuk amunisi dan pisang</p>
+            </footer>
+        </div>
+
+        <!-- tombol buy $PUNCH -->
+        <div class="buy-fixed">💥 BUY $PUNCH 💥</div>
+    </div>
+
+    <!-- ===== JavaScript terpisah (JS.js) ===== -->
+    <script>
+        // ================== JS.js ==================
+        (function() {
+            // kanvas senjata & api (konek ke HTML)
+            const canvas = document.getElementById('weapons-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height;
+
+            function resizeCanvas() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            // gambar senjata, peluru, api2
+            let mouseX = 0, mouseY = 0;
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            class WeaponParticle {
+                constructor() {
+                    this.reset();
+                }
+                reset() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.vx = (Math.random() - 0.5) * 2;
+                    this.vy = (Math.random() - 0.5) * 2;
+                    this.size = Math.random() * 12 + 3;
+                    this.color = `hsl(${20 + Math.random() * 30}, 90%, 60%)`;
+                    this.life = 1.0;
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.life -= 0.005;
+                    if (this.life <= 0 || this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+                        this.reset();
+                        this.life = 0.8 + Math.random() * 0.4;
+                    }
+                    // mendekati kursor lebih panas
+                    const dx = mouseX - this.x;
+                    const dy = mouseY - this.y;
+                    const dist = Math.sqrt(dx*dx+dy*dy);
+                    if (dist < 150) {
+                        this.vx += dx * 0.0005;
+                        this.vy += dy * 0.0005;
+                    }
+                }
+                draw() {
+                    ctx.globalAlpha = this.life * 0.8;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size * this.life, 0, Math.PI*2);
+                    ctx.fillStyle = this.color;
+                    ctx.shadowColor = '#f96d00';
+                    ctx.shadowBlur = 20;
+                    ctx.fill();
+                    // ledakan kecil
+                    ctx.beginPath();
+                    ctx.arc(this.x-2, this.y-2, this.size*0.4, 0, Math.PI*2);
+                    ctx.fillStyle = 'white';
+                    ctx.globalAlpha = this.life * 0.9;
+                    ctx.fill();
+                }
+            }
+
+            let particles = [];
+            for (let i = 0; i < 60; i++) {
+                particles.push(new WeaponParticle());
+            }
+
+            // gambar siluet senjata (gambar senapan, granat) pakai path
+            function drawWeapons() {
+                for (let i = 0; i < 5; i++) {
+                    let x = (i * 200 + Date.now() * 0.1) % (width + 400) - 200;
+                    let y = 200 + i * 70;
+                    ctx.shadowBlur = 30;
+                    ctx.shadowColor = '#ff5e00';
+                    ctx.fillStyle = '#3a2a1e';
+                    ctx.globalAlpha = 0.25;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(x+70, y-30);
+                    ctx.lineTo(x+110, y+10);
+                    ctx.lineTo(x+40, y+40);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                // background api gelap
+                ctx.fillStyle = '#080603';
+                ctx.fillRect(0,0,width,height);
+                // gambar partikel api
+                particles.forEach(p => p.update());
+                particles.sort((a,b) => a.size - b.size);
+                particles.forEach(p => p.draw());
+                drawWeapons();
+
+                // tambah efek kilatan
+                ctx.fillStyle = '#ff7b2b10';
+                ctx.fillRect(0,0,width,height);
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            // interaksi: klik senjata (nambah partikel)
+            canvas.addEventListener('click', (e) => {
+                for (let i=0; i<8; i++) {
+                    let p = new WeaponParticle();
+                    p.x = e.clientX + (Math.random()-0.5)*100;
+                    p.y = e.clientY + (Math.random()-0.5)*100;
+                    p.vx = (Math.random()-0.5)*8;
+                    p.vy = (Math.random()-0.5)*8;
+                    p.life = 0.9;
+                    p.color = `hsl(${30+Math.random()*40}, 100%, 65%)`;
+                    particles.push(p);
+                }
+                // batasi jumlah
+                if (particles.length > 200) particles = particles.slice(-180);
+            });
+
+            // kecilin partikel kalau kebanyakan
+            setInterval(() => {
+                if (particles.length > 180) particles = particles.slice(0, 150);
+            }, 3000);
+        })();
+
+        // (opsional) close badge / ga dipake tapi dari referensi tidak masalah
+        console.log('🔥 monyet iq 1000 weapons online');
+    </script>
+
+    <!-- fallback untuk gambar: pengguna tinggal ganti file nama sesuai, semua placeholder akan terganti kalau file ada -->
+</body>
+</html>
