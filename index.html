@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MONYET HQ · pasukan elite IQ 1000</title>
-    <!-- Favicon / Icon Tab pake gambar monyet -->
+    <!-- Favicon pake gambar monyet -->
     <link rel="icon" type="image/png" href="MONKEY.PNG">
     <style>
         /* ===== style.css ===== */
@@ -174,10 +174,11 @@
             font-size: 1.2rem;
         }
 
+        /* VIDEO SECTION - TAMBAH 1 VIDEO LAGI JADI 3 */
         .video-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 3rem;
+            gap: 2rem;
             justify-content: center;
             margin: 5rem 0;
         }
@@ -186,7 +187,7 @@
             border: 1px solid #ff7b2b;
             border-radius: 36px;
             padding: 1.5rem;
-            width: 600px;
+            width: 450px;
             box-shadow: 0 0 40px #ff4800;
             transition: transform 0.3s;
         }
@@ -196,7 +197,7 @@
         }
         .video-card iframe {
             width: 100%;
-            height: 380px;
+            height: 280px;
             border-radius: 24px;
             border: 2px solid #b34b18;
         }
@@ -227,7 +228,6 @@
             font-size: 0.9rem;
         }
 
-        /* GALLERY DENGAN NAMA-NAMA UNIK */
         .battle-gallery {
             margin: 6rem 0 3rem;
         }
@@ -397,7 +397,6 @@
             color: #ffae6a;
         }
 
-        /* Hero description baru */
         .hero-description {
             max-width: 800px;
             margin: 2rem auto;
@@ -413,12 +412,21 @@
             line-height: 1.6;
         }
 
+        .video-section-title {
+            text-align: center;
+            font-size: 2rem;
+            color: #ffae6a;
+            margin: 3rem 0 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
         @media (max-width: 768px) {
             .video-card {
                 width: 100%;
             }
             .video-card iframe {
-                height: 300px;
+                height: 250px;
             }
             .hero h1 {
                 font-size: 3rem;
@@ -447,7 +455,6 @@
             <section class="hero">
                 <h1>WELCOME <span>monyet iq 1000</span></h1>
                 
-                <!-- DESKRIPSI KEREN -->
                 <div class="hero-description">
                     <p>🐵 <strong>Pasukan Elite Monyet IQ 1000</strong> — Mereka bukan monyet biasa. Dengan kecerdasan 1000 IQ, mereka menguasai senjata api, taktik perang, dan persaudaraan yang tak terkalahkan. Bersiaplah menyaksikan pertempuran epik para primata jenius! 🔥⚔️</p>
                 </div>
@@ -466,27 +473,31 @@
                 </div>
             </section>
 
+            <!-- VIDEO SECTION - TANPA NAMA, 3 VIDEO -->
+            <h2 class="video-section-title">⚡ PERTEMPURAN TERKINI ⚡</h2>
             <div class="video-grid">
+                <!-- Video 1: TikTok Monyet -->
                 <div class="video-card">
                     <div class="video-label">
-                        <span class="tiktok-badge">🎵 TIKTOK · MONYET PERANG</span>
+                        <span class="tiktok-badge">🎬 VIDEO 1</span>
                     </div>
                     <iframe src="https://platform.twitter.com/embed/index.html?dnt=true&embedId=tw-tiktok-like&frame=false&hideCard=false&hideThread=false&id=2026113901071675596&lang=en&theme=dark&widgetsVersion=1.0" frameborder="0" allowfullscreen></iframe>
-                    <div class="video-meta">
-                        <span>🔥 6.9K likes</span>
-                        <span>💬 740 replies</span>
-                        <span>🐵 @Rohitcult_45</span>
-                    </div>
                 </div>
+                
+                <!-- Video 2: Elon Musk -->
                 <div class="video-card">
                     <div class="video-label">
-                        <span class="tiktok-badge">📺 YT SHORT · EPIC</span>
+                        <span class="tiktok-badge">🎬 VIDEO 2</span>
                     </div>
                     <iframe src="https://platform.twitter.com/embed/index.html?dnt=true&embedId=tw-yt-short&frame=false&hideCard=false&hideThread=false&id=2026020316804243789&lang=en&theme=dark&widgetsVersion=1.0" frameborder="0" allowfullscreen></iframe>
-                    <div class="video-meta">
-                        <span>⚡ Elon Musk</span>
-                        <span>2:44 AM · Feb 24, 2026</span>
+                </div>
+
+                <!-- Video 3: YouTube yang baru -->
+                <div class="video-card">
+                    <div class="video-label">
+                        <span class="tiktok-badge">🎬 VIDEO 3</span>
                     </div>
+                    <iframe src="https://www.youtube.com/embed/BrcE0YSK4Jw" frameborder="0" allowfullscreen></iframe>
                 </div>
             </div>
 
@@ -505,11 +516,11 @@
                 </div>
             </div>
 
-            <!-- GALLERY DENGAN NAMA-NAMA UNIK - Screenshot_65 DIHAPUS -->
+            <!-- GALLERY DENGAN NAMA-NAMA UNIK -->
             <section class="battle-gallery">
                 <h2 class="gallery-title">⚙️ AMUNISI & PERSAUDARAAN ⚙️</h2>
                 <div class="gallery-description">
-                    "5 prajurit terbaik dengan julukan legendaris mereka"
+                    "4 prajurit terbaik dengan julukan legendaris mereka"
                 </div>
                 <div class="gallery-grid">
                     <!-- MONKEY.PNG -->
@@ -539,7 +550,7 @@
                 </div>
             </section>
 
-            <!-- FOOTER DENGAN QUOTE KEREN -->
+            <!-- FOOTER DENGAN QUOTE -->
             <footer class="footer">
                 <div class="footer-hearts">
                     <span>⚔️</span>🐵🔥🧸<span>💣</span>
